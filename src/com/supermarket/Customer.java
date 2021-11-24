@@ -21,14 +21,14 @@ public class Customer  extends Totalpoint  {
 				Statement ps=con.createStatement();  
 				int groceryQty = 0;
 				float groceryUnitCost = 0;
-				ResultSet rs1=ps.executeQuery("select * from grocery where groceryName='"+pName+"'");
-				while(rs1.next()) 
+				ResultSet rsGrocery=ps.executeQuery("select groceryQuantity,groceryMrp from grocery where groceryName='"+pName+"'");
+				while(rsGrocery.next()) 
 				{  
-					 groceryQty=rs1.getInt(3);
-					 groceryUnitCost=rs1.getFloat(4);  
+					 groceryQty=rsGrocery.getInt(1);
+					 groceryUnitCost=rsGrocery.getFloat(2);  
 				
 				}
-				if(rs1.absolute(1))	
+				if(rsGrocery.absolute(1))	
 				{ 
 				
 					System.out.println("enter Quantity");
@@ -42,20 +42,19 @@ public class Customer  extends Totalpoint  {
 						else
 						{
 								  float productTotalCost=productQuantity*groceryUnitCost;
-								  PreparedStatement ps1=con.prepareStatement("insert into customer values(?,?,?,?,?,?,?);");
-								  ps1.setInt(1, cBillNo);
-								  ps1.setString(2,cName);
-								  ps1.setString(3, cPhoneNo);
-								  ps1.setString(4,pName);
-								  ps1.setInt(5,productQuantity);
-								  ps1.setFloat(6,groceryUnitCost);
-								  ps1.setFloat(7, productTotalCost);
-								  int x=ps1.executeUpdate();
+								  PreparedStatement insertCustomerProduct=con.prepareStatement("insert into customer values(?,?,?,?,?,?,?);");
+								  insertCustomerProduct.setInt(1, cBillNo);
+								  insertCustomerProduct.setString(2,cName);
+								  insertCustomerProduct.setString(3, cPhoneNo);
+								  insertCustomerProduct.setString(4,pName);
+								  insertCustomerProduct.setInt(5,productQuantity);
+								  insertCustomerProduct.setFloat(6,groceryUnitCost);
+								  insertCustomerProduct.setFloat(7, productTotalCost);
+								  int x=insertCustomerProduct.executeUpdate();
 								  int newGroceryQuantity=groceryQty-productQuantity;
-								  PreparedStatement ps3=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname =?;");
-								  ps3.setInt(1,newGroceryQuantity);
-								  ps3.setString(2,pName);
-								  int y= ps3.executeUpdate();
+								  PreparedStatement updateGrocery=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname ='"+pName+"';");
+								  updateGrocery.setInt(1,newGroceryQuantity);
+								  int y= updateGrocery.executeUpdate();
 								  if(x!=0  && y!=0)
 								  {
 									  //  System.out.println("datas inserted into customer bill");
@@ -74,14 +73,14 @@ public class Customer  extends Totalpoint  {
 				}
 				else
 				{    
-					 PreparedStatement ps1=con.prepareStatement("select * from grocery where groceryName like'"+pName+"%';");
-					 ResultSet rs2=ps1.executeQuery();
-					 while(rs2.next()) 
+					 PreparedStatement checkGroceryLike=con.prepareStatement("select * from grocery where groceryName like'"+pName+"%';");
+					 ResultSet rsGroceryLike=checkGroceryLike.executeQuery();
+					 while(rsGroceryLike.next()) 
 							{  
-									System.out.println("Productname: " + rs2.getString(2)+" of quantity " +rs2.getString(3)+" and price is "+rs2.getInt(4));  
+									System.out.println("Productname: " + rsGroceryLike.getString(2)+" of quantity " +rsGroceryLike.getInt(3)+" and price is "+rsGroceryLike.getFloat(4));  
 							}
 	
-					 if(rs2.absolute(1))	
+					 if(rsGroceryLike.absolute(1))	
 					 {  
 						System.out.println("\n     #####   the above are the similar products in the grocery list #####");
 						
@@ -107,26 +106,25 @@ public class Customer  extends Totalpoint  {
 				Statement ps=con.createStatement();  
 				int customerSellQty = 0;
 				float customerUnitCost = 0;
-				ResultSet rs1=ps.executeQuery("select purchaseQuantity,productUnitCost from customer where customerBillNo='"+cBillNo+"' AND  productName='"+pName+"';");
-				while(rs1.next()) 
+				ResultSet rsCustomerProduct=ps.executeQuery("select purchaseQuantity,productUnitCost from customer where customerBillNo='"+cBillNo+"' AND  productName='"+pName+"';");
+				while(rsCustomerProduct.next()) 
 				{  
-					 customerSellQty=rs1.getInt(1);
-					 customerUnitCost=rs1.getFloat(2);  
+					 customerSellQty=rsCustomerProduct.getInt(1);
+					 customerUnitCost=rsCustomerProduct.getFloat(2);  
 					  //System.out.println(product_qty+"   "+unit_cost);
 				}
-				if(rs1.absolute(1))	
+				if(rsCustomerProduct.absolute(1))	
 				{ 
 					  int newCustomerSellQty=customerSellQty+productQuantity;
 					  float productTotalCost=newCustomerSellQty*customerUnitCost;
-					  PreparedStatement ps1=con.prepareStatement("update customer set purchaseQuantity=?,productTotalCost=? where  customerBillNo='"+cBillNo+"' AND  productName='"+pName+"'");
-					  ps1.setInt(1,newCustomerSellQty);
-					  ps1.setFloat(2,productTotalCost);
-					  int x=ps1.executeUpdate();
+					  PreparedStatement updateCustomerProduct=con.prepareStatement("update customer set purchaseQuantity=?,productTotalCost=? where  customerBillNo='"+cBillNo+"' AND  productName='"+pName+"'");
+					  updateCustomerProduct.setInt(1,newCustomerSellQty);
+					  updateCustomerProduct.setFloat(2,productTotalCost);
+					  int x=updateCustomerProduct.executeUpdate();
 					  int newGroceryQuantity=groceryQuantity - productQuantity;
-					  PreparedStatement ps3=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname =?;");
-					  ps3.setInt(1, newGroceryQuantity);
-					  ps3.setString(2,pName);
-					  int y=ps3.executeUpdate();
+					  PreparedStatement updateGrocery=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname ='"+pName+"';");
+					  updateGrocery.setInt(1, newGroceryQuantity);
+					  int y=updateGrocery.executeUpdate();
 					  if(y!=0 && x!=0)
 					  {
 			             System.out.println("#####  "+productQuantity+" quantity of "+pName +" is updated in the existing customer bill  #####\n");
@@ -166,11 +164,11 @@ public class Customer  extends Totalpoint  {
 		 PreparedStatement ps;
 		try {
 			ps = con.prepareStatement("select productName,purchaseQuantity,productUnitCost,productTotalCost from customer where customerBillNo='"+cBillNo+"';");
-			ResultSet rs1=ps.executeQuery();
-			while(rs1.next()) 
+			ResultSet rsVendorBill=ps.executeQuery();
+			while(rsVendorBill.next()) 
 			{  
-					System.out.println(rs1.getString(1)+"\t\t"+rs1.getInt(2)+"\t\t"+rs1.getFloat(3)+"\t\t"+rs1.getFloat(4));
-					total=total+rs1.getInt(4);
+					System.out.println(rsVendorBill.getString(1)+"\t\t"+rsVendorBill.getInt(2)+"\t\t"+rsVendorBill.getFloat(3)+"\t\t"+rsVendorBill.getFloat(4));
+					total=total+rsVendorBill.getInt(4);
 			}
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
@@ -240,36 +238,34 @@ public class Customer  extends Totalpoint  {
 				Statement ps=con.createStatement();  
 				int customerSellQty = 0;
 				float customerunitcost = 0;
-				ResultSet rs1=ps.executeQuery("select purchaseQuantity,productUnitCost from customer where customerBillNo='"+cBillNo+"' AND  productName='"+pName+"';");
-				while(rs1.next()) 
+				ResultSet rsCustomerProduct=ps.executeQuery("select purchaseQuantity,productUnitCost from customer where customerBillNo='"+cBillNo+"' AND  productName='"+pName+"';");
+				while(rsCustomerProduct.next()) 
 				{  
-					 customerSellQty=rs1.getInt(1);
-					 customerunitcost=rs1.getFloat(2);  
+					 customerSellQty=rsCustomerProduct.getInt(1);
+					 customerunitcost=rsCustomerProduct.getFloat(2);  
 				}
-				if(rs1.absolute(1))	
+				if(rsCustomerProduct.absolute(1))	
 				{
 					System.out.println("enter Quantity");
 					int  productQuantity=sc.nextInt();
 					int  groceryQuantity=0;
-					 ResultSet rs2=ps.executeQuery("select groceryQuantity from grocery where groceryName='"+pName+"'");
-						while(rs2.next()) 
+					 ResultSet rsGrocery=ps.executeQuery("select groceryQuantity from grocery where groceryName='"+pName+"'");
+						while(rsGrocery.next()) 
 						{  
-							 groceryQuantity=rs2.getInt(1);
+							 groceryQuantity=rsGrocery.getInt(1);
 						}
 					int newGroceryQuantity=groceryQuantity+productQuantity;
 					if(customerSellQty== productQuantity)
 					{    
-						  PreparedStatement ps1=con.prepareStatement("Delete from  customer  where  customerBillNo='"+cBillNo+"' AND  productName='"+pName+"';"); 
-						  //ps1.setString(1,pName);
-						  int x=ps1.executeUpdate();
-						  PreparedStatement ps2=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname =?;");
-						  ps2.setInt(1,newGroceryQuantity);
-						  ps2.setString(2,pName);
-						  ps2.executeUpdate();
-						  if(x!=0)
+						  PreparedStatement deleteCustomerProduct=con.prepareStatement("Delete from  customer  where  customerBillNo='"+cBillNo+"' AND  productName='"+pName+"';"); 
+						  int x=deleteCustomerProduct.executeUpdate();
+						  PreparedStatement updateGrocery=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname ='"+pName+"';");
+						  updateGrocery.setInt(1,newGroceryQuantity);
+						  int y=updateGrocery.executeUpdate();
+						  if(x!=0 && y!=0)
 						  {
 							  System.out.println("#####  "+pName +" is fully removed from customer bill  #####\n");
-								 System.out.println("#####  Remaining Quantity of "+pName+" in the grocery list is:  "+newGroceryQuantity+"  #####\n");
+							  System.out.println("#####  Remaining Quantity of "+pName+" in the grocery list is:  "+newGroceryQuantity+"  #####\n");
 
 						  }
 					}
@@ -278,15 +274,15 @@ public class Customer  extends Totalpoint  {
 					{
 						int newCustomerSellQty=customerSellQty-productQuantity;
 						float productTotalCost=newCustomerSellQty*customerunitcost;
-						PreparedStatement ps1=con.prepareStatement("update customer set purchaseQuantity=?,productTotalCost=? where  customerBillNo='"+cBillNo+"' AND  productName='"+pName+"'");
-						  ps1.setInt(1,newCustomerSellQty);
-						  ps1.setFloat(2,productTotalCost);
-						  int x=ps1.executeUpdate();
-						PreparedStatement ps2=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname =?;");
-						  ps2.setInt(1,newGroceryQuantity);
-						  ps2.setString(2,pName);
-						  ps2.executeUpdate();
-						  if(x!=0)
+						PreparedStatement updateCustomerProduct=con.prepareStatement("update customer set purchaseQuantity=?,productTotalCost=? where  customerBillNo='"+cBillNo+"' AND  productName='"+pName+"'");
+						updateCustomerProduct.setInt(1,newCustomerSellQty);
+						updateCustomerProduct.setFloat(2,productTotalCost);
+						  int x=updateCustomerProduct.executeUpdate();
+						PreparedStatement updateGrocery=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname =?;");
+						updateGrocery.setInt(1,newGroceryQuantity);
+						updateGrocery.setString(2,pName);
+						 int y=updateGrocery.executeUpdate();
+						  if(x!=0 && y!=0)
 						  {
 							  
 							  
@@ -301,7 +297,23 @@ public class Customer  extends Totalpoint  {
 				} 
 				else
 				{
-					System.out.println("  "+ cName+" has  not buyed  the "+pName +" to us ");
+					 ResultSet rscheckCustomerProduct=ps.executeQuery("select * from customer where customerBillNo='"+cBillNo+"' AND  productName like '"+pName+"%';");
+					 while(rscheckCustomerProduct.next()) 
+							{  
+									System.out.println("Productname: " + rscheckCustomerProduct.getString(4)+" of quantity " +rscheckCustomerProduct.getInt(5)+" and price is "+rscheckCustomerProduct.getFloat(6));  
+							}
+	
+					 if(rscheckCustomerProduct.absolute(1))	
+					 {  
+						System.out.println("\n     #####   the above are the similar products in the customer bill #####");
+						
+						System.out.println("\n    #####  please enter the full name  of product  to  remove ######\n");
+					 }
+					 else
+					 {
+						 System.out.println("  "+ cName+" has  not buyed  the "+pName +" from  us ");
+					 }
+					
 				}
 		   }
 		   catch(Exception e)

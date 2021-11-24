@@ -21,10 +21,11 @@ public class Main {
 			Groceries g = new Groceries();
 			Customer c = new Customer();
 			displayItems();
+			
 			System.out.println("1)Vendors Portal \n2)Customers Portal \n3)to exit");
-			int option = sc.nextInt();
+		    String option = sc.next();
 			switch (option){
-			case 1:
+			case ("1"):
 				System.out.println("enter the vendor name");
 				String vendorName = sc.next();
 				try {
@@ -49,7 +50,7 @@ public class Main {
 						else
 
 						{
-							System.out.println(" phone number format is wrong");
+							System.out.println("     phone number format is wrong");
 
 						}
 
@@ -61,7 +62,7 @@ public class Main {
 				}
 
 				break;
-			case 2:
+			case ("2"):
 				System.out.println("enter customer name");
 				String customerName = sc.next();
 				try {
@@ -84,7 +85,7 @@ public class Main {
 						} else
 
 						{
-							System.out.println(" phone number format is wrong");
+							System.out.println("     phone number format is wrong");
 
 						}
 
@@ -95,12 +96,13 @@ public class Main {
 					e.printStackTrace();
 				}
 				break;
-			case 3:
+			case ("3"):
 				System.exit(0);
 				break;
 			default:
 				System.out.println("    please enter a valid input\n");
-			}
+			} 
+			
 		}
 		
 
@@ -123,13 +125,13 @@ public class Main {
 		// TODO Auto-generated method stub
 		try { 
 			Connection con=getConnect() ;
-			 PreparedStatement ps=con.prepareStatement("select * from grocery order by groceryId ");
-			ResultSet rs1=ps.executeQuery();
+			 PreparedStatement showGrocery=con.prepareStatement("select * from grocery order by groceryId ");
+			ResultSet rsShowGrocery=showGrocery.executeQuery();
 			System.out.println("S.NO" + "\t\t" + "NAME" + "\t\t\t" + "QUANTITY" + "\t" + "MRP RATE");
 			System.out.println("******************************************************************");
-			while(rs1.next()) 
+			while(rsShowGrocery.next()) 
 			{  
-					System.out.println(rs1.getInt(1)+"\t\t"+rs1.getString(2)+"\t\t"+rs1.getInt(3)+"\t\t"+rs1.getFloat(4));  
+					System.out.println(rsShowGrocery.getInt(1)+"\t\t"+rsShowGrocery.getString(2)+"\t\t"+rsShowGrocery.getInt(3)+"\t\t"+rsShowGrocery.getFloat(4));  
 			}
 			System.out.println("******************************************************************");
 			  con.close();
@@ -145,6 +147,7 @@ public class Main {
 
 		for (char c : chars) {
 			if (!Character.isLetter(c)) {
+				System.out.println("      name format is wrong");
 				return false;
 			}
 		}

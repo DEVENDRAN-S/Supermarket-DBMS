@@ -14,21 +14,19 @@ public class Groceries extends Vendor
 		   try {
 					Statement ps=con.createStatement();  
 					int groceryQty = 0;
-					ResultSet rs=ps.executeQuery("select groceryQuantity from grocery where groceryName='"+pName+"'");
-					while(rs.next()) 
+					ResultSet rsGrocery=ps.executeQuery("select groceryQuantity from grocery where groceryName='"+pName+"'");
+					while(rsGrocery.next()) 
 					{  
-						 groceryQty=rs.getInt(1); 
+						 groceryQty=rsGrocery.getInt(1); 
 					}
-					if(rs.absolute(1))	
+					if(rsGrocery.absolute(1))	
 					{ 
-						  //System.out.println("old product success");
 						  System.out.println("enter Quantity");
 						  int  productQuantity=sc.nextInt();
 						  int newGroceryQty=groceryQty+productQuantity;
-						  PreparedStatement ps1=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname =?;");
-						  ps1.setInt(1,newGroceryQty);
-						  ps1.setString(2,pName);
-						  int x=ps1.executeUpdate();
+						  PreparedStatement updateGrocery=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname ='"+pName+"'");
+						  updateGrocery.setInt(1,newGroceryQty);
+						  int x=updateGrocery.executeUpdate();
 						  groceryAlreadyContain(con,vName,vPhoneNo,pName, productQuantity,vBillNo);
 						  if(x!=0)
 						  {
@@ -37,7 +35,21 @@ public class Groceries extends Vendor
 					}
 					else
 					{
-						  //System.out.println("new product success");
+						 PreparedStatement checkGroceryLike=con.prepareStatement("select * from grocery where groceryName like'"+pName+"%';");
+						 ResultSet rsGroceryLike=checkGroceryLike.executeQuery();
+						 while(rsGroceryLike.next()) 
+								{  
+										System.out.println("Productname: " + rsGroceryLike.getString(2)+" of quantity " +rsGroceryLike.getInt(3)+" and price is "+rsGroceryLike.getFloat(4));  
+								}
+		
+						 if(rsGroceryLike.absolute(1))	
+						 {  
+							System.out.println("\n     #####   the above are the similar products in the grocery list #####");
+							
+							System.out.println("\n    #####  please enter the full name  of product  to  sell products ######\n");
+						 }
+						 else
+						 {
 						  System.out.println("enter Quantity");
 						  int  productQuantity=sc.nextInt();
 						  System.out.println("enter mrp rate");
@@ -45,35 +57,35 @@ public class Groceries extends Vendor
 						  System.out.println("enter vendor price");
 						  float vendorPrice=sc.nextFloat();
 						  int itemNo = 0;
-						  PreparedStatement ps1=con.prepareStatement("select groceryId from grocery order by groceryId desc limit 1; ");
-						  ResultSet rs1=ps1.executeQuery();
-						  while(rs1.next()) 
+						  PreparedStatement psGetItemId=con.prepareStatement("select groceryId from grocery order by groceryId desc limit 1; ");
+						  ResultSet rsGetItemId=psGetItemId.executeQuery();
+						  while(rsGetItemId.next()) 
 						  {
-							 itemNo=rs1.getInt(1); 
+							 itemNo=rsGetItemId.getInt(1); 
 						  }	  
 						  itemNo=itemNo+1;		
-						  PreparedStatement ps2=con.prepareStatement("insert into grocery values(?,?,?,?);");
-						  ps2.setInt(1,itemNo);
-						  ps2.setString(2,pName);
-						  ps2.setInt(3,productQuantity);
-						  ps2.setFloat(4,groceryMrp);
-						  int x=ps2.executeUpdate();
+						  PreparedStatement insertGrocery=con.prepareStatement("insert into grocery values(?,?,?,?);");
+						  insertGrocery.setInt(1,itemNo);
+						  insertGrocery.setString(2,pName);
+						  insertGrocery.setInt(3,productQuantity);
+						  insertGrocery.setFloat(4,groceryMrp);
+						  int x=insertGrocery.executeUpdate();
 						  float productTotalCost= vendorPrice*productQuantity;
-						  PreparedStatement ps11=con.prepareStatement("insert into vendor values(?,?,?,?,?,?,?);");
-						  ps11.setInt(1, vBillNo);
-						  ps11.setString(2,vName);
-						  ps11.setString(3, vPhoneNo);
-						  ps11.setString(4,pName);
-						  ps11.setInt(5,productQuantity);
-						  ps11.setFloat(6,vendorPrice);
-						  ps11.setFloat(7, productTotalCost);
-						  int y=ps11.executeUpdate();
+						  PreparedStatement insertVendorProduct=con.prepareStatement("insert into vendor values(?,?,?,?,?,?,?);");
+						  insertVendorProduct.setInt(1, vBillNo);
+						  insertVendorProduct.setString(2,vName);
+						  insertVendorProduct.setString(3, vPhoneNo);
+						  insertVendorProduct.setString(4,pName);
+						  insertVendorProduct.setInt(5,productQuantity);
+						  insertVendorProduct.setFloat(6,vendorPrice);
+						  insertVendorProduct.setFloat(7, productTotalCost);
+						  int y=insertVendorProduct.executeUpdate();
 						  if(y!=0 && x!=0)
 						  {
 							   System.out.println("#####  "+productQuantity+" quantity of "+pName +" is added to Vendor bill  #####\n");
 						   	   System.out.println("#####  New item "+pName+" with quantity "+productQuantity+" is added to  the grocery list  #####\n");
 						  }
-						
+						 }
 					}
 	     }
 	     catch (Exception e)
@@ -92,21 +104,21 @@ public class Groceries extends Vendor
 				Statement ps=con.createStatement();  
 				int vendorBuyQty = 0;
 				float  productUnitCost=0;
-				ResultSet rs=ps.executeQuery("select buyQuantity,productUnitCost from vendor where productName='"+pName+"' and vendorBillNo='"+vBillNo+"'");
-				while(rs.next()) 
+				ResultSet rsVendorProduct=ps.executeQuery("select buyQuantity,productUnitCost from vendor where productName='"+pName+"' and vendorBillNo='"+vBillNo+"'");
+				while(rsVendorProduct.next()) 
 				{  
-					 vendorBuyQty=rs.getInt(1);
-					 productUnitCost=rs.getFloat(2);
+					 vendorBuyQty=rsVendorProduct.getInt(1);
+					 productUnitCost=rsVendorProduct.getFloat(2);
 				}
-				if(rs.absolute(1))	
+				if(rsVendorProduct.absolute(1))	
 				{
 					  int newQty=vendorBuyQty+productQuantity;
 					  float productTotalCost=newQty*productUnitCost;
-					  PreparedStatement ps1=con.prepareStatement("update vendor set buyQuantity=?,productTotalcost=?  where productName='"+pName+"' and vendorBillNo='"+vBillNo+"'");
-					  ps1.setInt(1,newQty);
-					  ps1.setFloat(2,productTotalCost);
-					  int x=ps1.executeUpdate();
-					  if(x!=0)
+					  PreparedStatement updateVendorProduct=con.prepareStatement("update vendor set buyQuantity=?,productTotalcost=?  where productName='"+pName+"' and vendorBillNo='"+vBillNo+"'");
+					  updateVendorProduct.setInt(1,newQty);
+					  updateVendorProduct.setFloat(2,productTotalCost);
+					  int y=updateVendorProduct.executeUpdate();
+					  if(y!=0)
 					  {
 						  System.out.println(" item in the vendor bill is updated ");
 					  }
@@ -116,15 +128,15 @@ public class Groceries extends Vendor
 					  System.out.println("enter vendor price");
 				      float vendorPrice=sc.nextFloat();
 					  float productTotalCost= vendorPrice*productQuantity;
-					  PreparedStatement ps11=con.prepareStatement("insert into vendor values(?,?,?,?,?,?,?);");
-					  ps11.setInt(1, vBillNo);
-					  ps11.setString(2,vName);
-					  ps11.setString(3, vPhoneNo);
-					  ps11.setString(4,pName);
-					  ps11.setInt(5,productQuantity);
-					  ps11.setFloat(6,vendorPrice);
-					  ps11.setFloat(7, productTotalCost);
-					  int y=ps11.executeUpdate();
+					  PreparedStatement  insertVendorProduct=con.prepareStatement("insert into vendor values(?,?,?,?,?,?,?);");
+					  insertVendorProduct.setInt(1, vBillNo);
+					  insertVendorProduct.setString(2,vName);
+					  insertVendorProduct.setString(3, vPhoneNo);
+					  insertVendorProduct.setString(4,pName);
+					  insertVendorProduct.setInt(5,productQuantity);
+					  insertVendorProduct.setFloat(6,vendorPrice);
+					  insertVendorProduct.setFloat(7, productTotalCost);
+					  int y=insertVendorProduct.executeUpdate();
 					  if(y!=0)
 					  {
 						   System.out.println("#####  "+productQuantity+" quantity of "+pName +" is added to Vendor bill  #####\n");

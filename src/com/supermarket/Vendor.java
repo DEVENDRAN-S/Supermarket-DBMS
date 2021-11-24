@@ -33,11 +33,11 @@ public class Vendor {
 	java.sql.PreparedStatement ps;
 	try {
 		 ps = con.prepareStatement("select productName,buyQuantity,productUnitCost,productTotalCost from vendor where vendorBillNo='"+vBillNo+"';");
-		ResultSet rs1=ps.executeQuery();
-		while(rs1.next()) 
+		ResultSet rsVendorBill=ps.executeQuery();
+		while(rsVendorBill.next()) 
 		{  
-				System.out.println(rs1.getString(1)+"\t\t"+rs1.getInt(2)+"\t\t"+rs1.getFloat(3)+"\t\t"+rs1.getFloat(4));
-				total=total+rs1.getInt(4);
+				System.out.println(rsVendorBill.getString(1)+"\t\t"+rsVendorBill.getInt(2)+"\t\t"+rsVendorBill.getFloat(3)+"\t\t"+rsVendorBill.getFloat(4));
+				total=total+rsVendorBill.getInt(4);
 		}
 	} catch (SQLException e1) {
 		// TODO Auto-generated catch block
@@ -89,37 +89,36 @@ public class Vendor {
 						Statement ps=con.createStatement();  
 						int vendorBuyQty = 0;
 						float vendorUnitCost = 0;
-						ResultSet rs1=ps.executeQuery("select buyQuantity,productUnitCost from vendor where productName='"+pName+"' and vendorBillNo='"+vBillNo+"'");
-						while(rs1.next()) 
+						ResultSet rsVendorProduct=ps.executeQuery("select buyQuantity,productUnitCost from vendor where productName='"+pName+"' and vendorBillNo='"+vBillNo+"'");
+						while(rsVendorProduct.next()) 
 						{  
-							 vendorBuyQty=rs1.getInt(1);
-							 vendorUnitCost=rs1.getFloat(2);  
+							 vendorBuyQty=rsVendorProduct.getInt(1);
+							 vendorUnitCost=rsVendorProduct.getFloat(2);  
 							
 						}
-						if(rs1.absolute(1))	
+						if(rsVendorProduct.absolute(1))	
 						{
 							System.out.println("enter Quantity");
 							int  productQuantity=sc.nextInt();
 							int  groceryQty=0;
-							 ResultSet rs2=ps.executeQuery("select groceryQuantity from grocery where groceryName='"+pName+"'");
-								while(rs2.next()) 
+							 ResultSet rsGrocery=ps.executeQuery("select groceryQuantity from grocery where groceryName='"+pName+"'");
+								while(rsGrocery.next()) 
 								{  
-									 groceryQty=rs2.getInt(1);
+									 groceryQty= rsGrocery.getInt(1);
 								}
 							int newGroceryQty=groceryQty-productQuantity;
 							if(vendorBuyQty== productQuantity)
 							{    
-								  PreparedStatement ps1=con.prepareStatement("Delete from  vendor  where  vendorBillNo='"+vBillNo+"' AND  productName='"+pName+"';"); 
-								  int x=ps1.executeUpdate();
+								  PreparedStatement deleteVendorProduct=con.prepareStatement("Delete from  vendor  where  vendorBillNo='"+vBillNo+"' AND  productName='"+pName+"';"); 
+								  int x=deleteVendorProduct.executeUpdate();
 								  if(x!=0)
 								  {
 				 	 				  System.out.println("#####  "+pName +" is fully removed from Vendor bill  #####\n");
 								  }
 								  if(vendorBuyQty==groceryQty) 
 								  {
-									  PreparedStatement ps2=con.prepareStatement("Delete from  grocery  where  groceryName='"+pName+"';"); 
-									  //ps1.setString(1,pName);
-									  int y=ps2.executeUpdate();
+									  PreparedStatement deleteGrocery=con.prepareStatement("Delete from  grocery  where  groceryName='"+pName+"';"); 
+									  int y=deleteGrocery.executeUpdate();
 									  if(y!=0)
 									  {
 										  System.out.println("#####  "+pName +" is fully removed from Groceries list  #####\n");
@@ -128,10 +127,9 @@ public class Vendor {
 								  }
 								  else
 								  {
-									  PreparedStatement ps3=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname =?;");
-									  ps3.setInt(1,newGroceryQty);
-									  ps3.setString(2,pName);
-									  int y=ps3.executeUpdate();
+									  PreparedStatement updateGrocery=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname ="+pName+"';");
+									  updateGrocery.setInt(1,newGroceryQty);
+									  int y=updateGrocery.executeUpdate();
 									  if(y!=0)
 									  {
 										  System.out.println("#####  Remaining Quantity of "+pName+" in the grocery list is:  "+newGroceryQty+"  #####\n");
@@ -145,15 +143,14 @@ public class Vendor {
 							{
 								int newvendorBuyQty=vendorBuyQty-productQuantity;
 								float productTotalCost=newvendorBuyQty*vendorUnitCost;
-								PreparedStatement ps1=con.prepareStatement("update vendor set buyQuantity=?,productTotalCost=? where  vendorBillNo='"+vBillNo+"' AND  productName='"+pName+"'");
-								  ps1.setInt(1,newvendorBuyQty);
-								  ps1.setFloat(2,productTotalCost);
-								  int x=ps1.executeUpdate();
-								PreparedStatement ps2=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname =?;");
-								  ps2.setInt(1,newGroceryQty);
-								  ps2.setString(2,pName);
-								  ps2.executeUpdate();
-								  if(x!=0)
+								PreparedStatement updateVendorproduct=con.prepareStatement("update vendor set buyQuantity=?,productTotalCost=? where  vendorBillNo='"+vBillNo+"' AND  productName='"+pName+"'");
+								updateVendorproduct.setInt(1,newvendorBuyQty);
+								updateVendorproduct.setFloat(2,productTotalCost);
+								  int x=updateVendorproduct.executeUpdate();
+								PreparedStatement updateGrocery=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname ='"+pName+"';");
+								updateGrocery.setInt(1,newGroceryQty);
+								int y=updateGrocery.executeUpdate();
+								  if(x!=0 && y!=0)
 								  {
 								      System.out.println("#####  "+productQuantity+" quantity of "+pName +" is removed from  the existing Vendor bill  #####\n");
 									  System.out.println("#####  Remaining Quantity of "+pName+" in the grocery list is:  "+newGroceryQty+"  #####\n");
@@ -166,7 +163,22 @@ public class Vendor {
 						} 
 						else
 						{
-							System.out.println("  "+ vName+" has  not selled  the "+pName +" to us ");
+							 ResultSet rscheckVendorProduct=ps.executeQuery("select * from vendor where vendorBillNo='"+vBillNo+"' AND  productName like '"+pName+"%';");
+							 while(rscheckVendorProduct.next()) 
+									{  
+											System.out.println("Productname: " + rscheckVendorProduct.getString(4)+" of quantity " +rscheckVendorProduct.getInt(5)+" and price is "+rscheckVendorProduct.getFloat(6));  
+									}
+			
+							 if(rscheckVendorProduct.absolute(1))	
+							 {  
+								System.out.println("\n     #####   the above are the similar products in the vendor bill #####");
+								
+								System.out.println("\n    #####  please enter the full name  of product  to  remove ######\n");
+							 }
+							 else
+							 {
+								 System.out.println("  "+ vName+" has  not selled  the "+pName +" to us ");
+							 }
 						}
 				   }
 				   catch(Exception e)
