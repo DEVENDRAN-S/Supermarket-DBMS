@@ -48,8 +48,17 @@ public class Vendor {
    System.out.println("Total Amount   :"+total);
    System.out.println("======================================================================");
    System.out.println("         Thank you! Have a safe and Happy day!!!\n\n\n");
-   
-	}
+ 
+   try {
+	   PreparedStatement rsVendorBillTotal= con.prepareStatement("insert into vendorBillTotal values(?,?);");
+	   rsVendorBillTotal.setInt(1,vBillNo);
+	   rsVendorBillTotal.setFloat(2,total);
+	   rsVendorBillTotal.executeUpdate();
+      } catch (SQLException e) {
+	// TODO Auto-generated catch block
+	    e.printStackTrace();
+       }
+  }
 	
 	public  void buyOrRemove(Connection con,String vName,String vPhoneNo,int vBillNo) 
 	{

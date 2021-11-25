@@ -141,6 +141,7 @@ public class Customer  extends Totalpoint  {
 		     {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.out.println("invalid input");
 		     } 
 				
 		      
@@ -217,8 +218,13 @@ public class Customer  extends Totalpoint  {
 	     }
 	     else if(billChange.equalsIgnoreCase("no")) 
 	     {
-	    	System.out.println("           Your bill is confirmed!thank you\n\n\n");
-	    	customerdetails(con ,cName, cPhoneNo,  discountPrice);//adding points to customers
+	    	 customerdetails(con ,cName, cPhoneNo,  discountPrice);//adding points to customers
+	    	 System.out.println("           Your bill is confirmed!thank you\n\n\n");
+	    		PreparedStatement rsCustomerBillTotal= con.prepareStatement("insert into CustomerBillTotal values(?,?);");
+	    	    rsCustomerBillTotal.setInt(1,cBillNo);
+	    	    rsCustomerBillTotal.setFloat(2,discountPrice);
+	    	    rsCustomerBillTotal.executeUpdate();
+	    	   
 	     }
 	    }
 	   catch(Exception e)
@@ -227,8 +233,6 @@ public class Customer  extends Totalpoint  {
 	    	System.out.println(" Invalid input");
 	       }
 	     
-	     
-	    //payment(discountPrice); 
 	}
 	public  void removeItem(Connection con,String cName,String cPhoneNo,int cBillNo) {
 		// for canceling items

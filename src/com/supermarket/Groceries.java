@@ -24,14 +24,18 @@ public class Groceries extends Vendor
 						  System.out.println("enter Quantity");
 						  int  productQuantity=sc.nextInt();
 						  int newGroceryQty=groceryQty+productQuantity;
-						  PreparedStatement updateGrocery=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname ='"+pName+"'");
-						  updateGrocery.setInt(1,newGroceryQty);
-						  int x=updateGrocery.executeUpdate();
-						  groceryAlreadyContain(con,vName,vPhoneNo,pName, productQuantity,vBillNo);
-						  if(x!=0)
+						  if( groceryAlreadyContain(con,vName,vPhoneNo,pName, productQuantity,vBillNo))
 						  {
-							  System.out.println("#####  Quantity of "+pName+" in the grocery list is updated to:  "+newGroceryQty+"  #####\n");
-						  }		
+							  PreparedStatement updateGrocery=con.prepareStatement("update grocery set groceryQuantity=?  where groceryname ='"+pName+"'");
+							  updateGrocery.setInt(1,newGroceryQty);
+							  int x=updateGrocery.executeUpdate();
+							 
+							  if(x!=0)
+							  {
+								  System.out.println("#####  Quantity of "+pName+" in the grocery list is updated to:  "+newGroceryQty+"  #####\n");
+							  }		
+						  }
+						  
 					}
 					else
 					{
@@ -101,7 +105,7 @@ public class Groceries extends Vendor
 		
 	}
 
-	public  void groceryAlreadyContain(Connection con,String vName,String vPhoneNo,String pName, int  productQuantity,int vBillNo)
+	public  boolean groceryAlreadyContain(Connection con,String vName,String vPhoneNo,String pName, int  productQuantity,int vBillNo)
 	{
 		  try {
 				Statement ps=con.createStatement();  
@@ -147,12 +151,13 @@ public class Groceries extends Vendor
 						      currentVendorProducts(con ,vBillNo); 
 					  }
 				}
+				return true;
 		    }catch (Exception e)
 		     {
 		     e.printStackTrace();
 		     System.err.println("Invalid Input");
-		     }
-		
+		     return false;
+		     } 
 	} 
 	
 
