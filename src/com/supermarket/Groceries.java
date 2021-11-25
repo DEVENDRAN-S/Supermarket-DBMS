@@ -39,11 +39,13 @@ public class Groceries extends Vendor
 						 ResultSet rsGroceryLike=checkGroceryLike.executeQuery();
 						 while(rsGroceryLike.next()) 
 								{  
-										System.out.println("Productname: " + rsGroceryLike.getString(2)+" of quantity " +rsGroceryLike.getInt(3)+" and price is "+rsGroceryLike.getFloat(4));  
+								        System.out.println("******************************************************************");
+										System.out.println("Productname:   " + rsGroceryLike.getString(2)+"\t Quantity: " +rsGroceryLike.getInt(3)+"\t Price: "+rsGroceryLike.getFloat(4));  
 								}
 		
 						 if(rsGroceryLike.absolute(1))	
 						 {  
+							System.out.println("******************************************************************");
 							System.out.println("\n     #####   the above are the similar products in the grocery list #####");
 							
 							System.out.println("\n    #####  please enter the full name  of product  to  sell products ######\n");
@@ -83,6 +85,7 @@ public class Groceries extends Vendor
 						  if(y!=0 && x!=0)
 						  {
 							   System.out.println("#####  "+productQuantity+" quantity of "+pName +" is added to Vendor bill  #####\n");
+							   currentVendorProducts(con ,vBillNo); 
 						   	   System.out.println("#####  New item "+pName+" with quantity "+productQuantity+" is added to  the grocery list  #####\n");
 						  }
 						 }
@@ -120,7 +123,8 @@ public class Groceries extends Vendor
 					  int y=updateVendorProduct.executeUpdate();
 					  if(y!=0)
 					  {
-						  System.out.println(" item in the vendor bill is updated ");
+						  System.out.println("#####  "+productQuantity+" quantity of "+pName +" is updated to existing  to Vendor bill  #####\n");
+						  currentVendorProducts(con ,vBillNo); 
 					  }
 				}
 				else
@@ -139,7 +143,8 @@ public class Groceries extends Vendor
 					  int y=insertVendorProduct.executeUpdate();
 					  if(y!=0)
 					  {
-						   System.out.println("#####  "+productQuantity+" quantity of "+pName +" is added to Vendor bill  #####\n");
+						      System.out.println("#####  "+productQuantity+" quantity of "+pName +" is added to Vendor bill  #####\n");
+						      currentVendorProducts(con ,vBillNo); 
 					  }
 				}
 		    }catch (Exception e)

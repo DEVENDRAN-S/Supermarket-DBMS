@@ -59,73 +59,26 @@ public class Totalpoint {
           System.err.println("Invalid Input");
          }
     }
-
-	
-	
-	public void payment(float discountPrice) {
-		System.out.println("do you want to make  online payment  (yes/no)");
-		String paymentMode = sc.next();
-		if (paymentMode.equalsIgnoreCase("yes")) {
-			System.out.println("please select your bank to pay");
-			System.out.println("1)axis bank");
-			System.out.println("2)SBI");
-			System.out.println("3)Indian bank");
-			System.out.println("4)ICICI BANK");
-			selectBank(discountPrice);
-
-		} else {
-			System.out.println("         Thank you !We wish you all a great success!!!!\n");
-		}
-	}
-
-	public void selectBank(float discountPrice) {
+   public void currentCustomerProducts(Connection con ,int cBillNo) 
+   {
+	      System.out.println("======================================================================");
+		  System.out.println("Item name"+"\t\t"+"Quantity"+"\t"+"unit cost"+"\t"+"Item Total cost");
+		  System.out.println("======================================================================");
+		  
 		try {
-			int opt = sc.nextInt();
-			switch (opt) {
-			case 1:
-				System.out.println("Welcome to AXIS bank");
-				break;
-			case 2:
-				System.out.println("Welcome to SBI");
-				break;
-			case 3:
-				System.out.println("Welcome to Indian bank");
-				break;
-			case 4:
-				System.out.println("Welcome to ICICI BANK");
-				break;
-			default:
-				System.out.println("Please select Banks only in the list");
-				selectBank(discountPrice);
-
+			Statement ps = con.createStatement();
+			ResultSet rsCustomerBill=ps.executeQuery ("select productName,purchaseQuantity,productUnitCost,productTotalCost from customer where customerBillNo='"+cBillNo+"';");
+			while(rsCustomerBill.next()) 
+			{  
+					System.out.println(rsCustomerBill.getString(1)+"\t\t"+rsCustomerBill.getInt(2)+"\t\t"+rsCustomerBill.getFloat(3)+"\t\t"+rsCustomerBill.getFloat(4));
 			}
-			amountCheck(discountPrice);
-		} catch (InputMismatchException e) {
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println("Invalid input");
-		}
-
-	}
-
-	public void amountCheck(float discountPrice) {
-
-		try {
-			 System.out.println("enter  the amount to pay");
-			 float amountPay = sc.nextFloat();
-			if (amountPay == discountPrice)
-			{
-				System.out.println("                  your payment is successfull");
-				System.out.println("         Thank you !We wish you all a great success!!!!\n");
-			}
-			else 
-			{
-				System.out.println("wrong amount");
-			}
-		} catch (InputMismatchException e) {
-			e.printStackTrace();
-			System.out.println("Entered value is not a Integer/Float");
-		}
-
-	}
+		}  
+			
+		  
+		  System.out.println("======================================================================\n");
+   }
 
 }

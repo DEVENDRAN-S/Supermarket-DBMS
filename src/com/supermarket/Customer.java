@@ -57,9 +57,8 @@ public class Customer  extends Totalpoint  {
 								  int y= updateGrocery.executeUpdate();
 								  if(x!=0  && y!=0)
 								  {
-									  //  System.out.println("datas inserted into customer bill");
 									  System.out.println("#####  "+productQuantity+" quantity of "+pName +" is added to customer bill  #####\n");
-									 // System.out.println("datas updated into grocery list");
+									  currentCustomerProducts(con ,cBillNo);
 									  System.out.println("#####  Remaining Quantity of "+pName+" in the grocery list is:  "+newGroceryQuantity+"  #####\n");
 								  }
 							
@@ -77,11 +76,13 @@ public class Customer  extends Totalpoint  {
 					 ResultSet rsGroceryLike=checkGroceryLike.executeQuery();
 					 while(rsGroceryLike.next()) 
 							{  
-									System.out.println("Productname: " + rsGroceryLike.getString(2)+" of quantity " +rsGroceryLike.getInt(3)+" and price is "+rsGroceryLike.getFloat(4));  
+						            System.out.println("******************************************************************");
+									System.out.println("Productname:   "  + rsGroceryLike.getString(2)+"\t Quantity: " +rsGroceryLike.getInt(3)+"\t Price: "+rsGroceryLike.getFloat(4));  
 							}
 	
 					 if(rsGroceryLike.absolute(1))	
-					 {  
+					 { 
+						System.out.println("******************************************************************");
 						System.out.println("\n     #####   the above are the similar products in the grocery list #####");
 						
 						System.out.println("\n    #####  please enter the full name  of product  to  sell products ######\n");
@@ -110,8 +111,7 @@ public class Customer  extends Totalpoint  {
 				while(rsCustomerProduct.next()) 
 				{  
 					 customerSellQty=rsCustomerProduct.getInt(1);
-					 customerUnitCost=rsCustomerProduct.getFloat(2);  
-					  //System.out.println(product_qty+"   "+unit_cost);
+					 customerUnitCost=rsCustomerProduct.getFloat(2); 
 				}
 				if(rsCustomerProduct.absolute(1))	
 				{ 
@@ -128,6 +128,7 @@ public class Customer  extends Totalpoint  {
 					  if(y!=0 && x!=0)
 					  {
 			             System.out.println("#####  "+productQuantity+" quantity of "+pName +" is updated in the existing customer bill  #####\n");
+			             currentCustomerProducts(con ,cBillNo);
 				    	 System.out.println("#####  Remaining Quantity of "+pName+" in the grocery list is:  "+newGroceryQuantity+"  #####\n");
 					  }
 					return true;
@@ -164,11 +165,11 @@ public class Customer  extends Totalpoint  {
 		 PreparedStatement ps;
 		try {
 			ps = con.prepareStatement("select productName,purchaseQuantity,productUnitCost,productTotalCost from customer where customerBillNo='"+cBillNo+"';");
-			ResultSet rsVendorBill=ps.executeQuery();
-			while(rsVendorBill.next()) 
+			ResultSet rsCustomerBill=ps.executeQuery();
+			while(rsCustomerBill.next()) 
 			{  
-					System.out.println(rsVendorBill.getString(1)+"\t\t"+rsVendorBill.getInt(2)+"\t\t"+rsVendorBill.getFloat(3)+"\t\t"+rsVendorBill.getFloat(4));
-					total=total+rsVendorBill.getInt(4);
+					System.out.println(rsCustomerBill.getString(1)+"\t\t"+rsCustomerBill.getInt(2)+"\t\t"+rsCustomerBill.getFloat(3)+"\t\t"+rsCustomerBill.getFloat(4));
+					total=total+rsCustomerBill.getInt(4);
 			}
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
@@ -265,6 +266,7 @@ public class Customer  extends Totalpoint  {
 						  if(x!=0 && y!=0)
 						  {
 							  System.out.println("#####  "+pName +" is fully removed from customer bill  #####\n");
+							  currentCustomerProducts(con ,cBillNo);
 							  System.out.println("#####  Remaining Quantity of "+pName+" in the grocery list is:  "+newGroceryQuantity+"  #####\n");
 
 						  }
@@ -287,7 +289,8 @@ public class Customer  extends Totalpoint  {
 							  
 							  
 							  System.out.println("#####  "+productQuantity+" quantity of "+pName +" is removed from  the existing customer bill  #####\n");
-								 System.out.println("#####  Remaining Quantity of "+pName+" in the grocery list is:  "+newGroceryQuantity+"  #####\n");
+							  currentCustomerProducts(con ,cBillNo);
+							  System.out.println("#####  Remaining Quantity of "+pName+" in the grocery list is:  "+newGroceryQuantity+"  #####\n");
 						  }
 					}
 					else
@@ -299,12 +302,13 @@ public class Customer  extends Totalpoint  {
 				{
 					 ResultSet rscheckCustomerProduct=ps.executeQuery("select * from customer where customerBillNo='"+cBillNo+"' AND  productName like '"+pName+"%';");
 					 while(rscheckCustomerProduct.next()) 
-							{  
-									System.out.println("Productname: " + rscheckCustomerProduct.getString(4)+" of quantity " +rscheckCustomerProduct.getInt(5)+" and price is "+rscheckCustomerProduct.getFloat(6));  
+							{   
+						            System.out.println("******************************************************************");
+									System.out.println("Productname:   " + rscheckCustomerProduct.getString(4)+"\t Quantity: "  +rscheckCustomerProduct.getInt(5)+"\t Price: "+rscheckCustomerProduct.getFloat(6));  
 							}
 	
 					 if(rscheckCustomerProduct.absolute(1))	
-					 {  
+					 {  System.out.println("******************************************************************");
 						System.out.println("\n     #####   the above are the similar products in the customer bill #####");
 						
 						System.out.println("\n    #####  please enter the full name  of product  to  remove ######\n");

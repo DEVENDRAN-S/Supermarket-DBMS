@@ -12,7 +12,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		System.out.println("                " + "WELCOME TO OUR SUPER MARKET");
+		//System.out.println("                " + "WELCOME TO OUR SUPER MARKET");
 		System.out.println("******************************************************************");
 		int vendorBillNo = 0;
 		int customerBillNo = 0;
@@ -21,7 +21,6 @@ public class Main {
 			Groceries g = new Groceries();
 			Customer c = new Customer();
 			displayItems();
-			
 			System.out.println("1)Vendors Portal \n2)Customers Portal \n3)to exit");
 		    String option = sc.next();
 			switch (option){
